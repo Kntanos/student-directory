@@ -9,7 +9,7 @@ def input_students
     while !name.empty? do
         # add the student name to the array
         students << {name: name, cohort: :November}
-        puts "Now we have #{students.count} students"
+        puts "Now we have" + " #{students.count}#{students.count > 1 ? " students" : " student"}"
         # get another name from the user
         name = gets.chomp
     end
@@ -17,23 +17,30 @@ def input_students
     students
 end
 
+
 def print_header
     puts "The students of Villains Academy"
     puts "-------------"
 end
 
 def print(students)
+    exit if students.count == 0
+    print_header
     students.each do |student|
         puts "#{student[:name]} (#{student[:cohort]} cohort)"
     end
+    print_footer (students)
 end
 
 def print_footer (names)
-    puts puts "Overall, we have #{names.count} great students"
+    if names.count > 1
+        x = "students"
+    else x = "student"
+    end
+    puts "Overall, we have #{names.count} great #{x}"
 end
 
 students = input_students
 #nothing happens until we call the methods
-print_header
+
 print(students)
-print_footer (students)
