@@ -1,18 +1,17 @@
-def load_students
-    file = File.open("students.csv", "r")
-    file.readlines.each do |line|
-    name, cohort = line.chomp.split(",") #WOW!!! Paraller assignemnt of two variables from the split in one go!
-        @students << {name: name, cohort: cohort.to_sym}
-    end
-    file.close
-end
+@students =[] # create an empty array
 
-#@students =[] # create an empty array
+def print_menu
+    puts "1. Input the students"
+    puts "2. Show the students"
+    puts "3. Save the list to students.csv"
+    puts "4. Load the list of students.csv"
+    puts "9. Exit"
+end
 
 def interactive_menu
     loop do
         print_menu
-        process(gets.chomp)
+        process(STDIN.gets.chomp)
     end
 end
 
@@ -33,12 +32,21 @@ def process(selection)
     end
 end
 
-def print_menu
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "3. Save the list to students.csv"
-    puts "4. Load the list of students.csv"
-    puts "9. Exit"
+def input_students
+    # students =[] # create an empty array
+    puts "Please enter the names of the students"
+    puts "To finish, just hit return twice"
+    # get the first name
+    name = STDIN.gets.chomp
+    # while the name is not empty, repeat this code
+    while !name.empty? do
+        # add the student name to the array
+        @students << {name: name, cohort: :November}
+        puts "Now we have" + " #{@students.count}#{@students.count > 1 ? " students" : " student"}"
+        # get another name from the user
+        name = STDIN.gets.chomp
+    end
+    @students # return the array of students
 end
 
 def show_students
@@ -46,24 +54,6 @@ def show_students
     print_student_list
     print_footer
 end
-
-def input_students
-    # students =[] # create an empty array
-    puts "Please enter the names of the students"
-    puts "To finish, just hit return twice"
-    # get the first name
-    name = gets.chomp
-    # while the name is not empty, repeat this code
-    while !name.empty? do
-        # add the student name to the array
-        @students << {name: name, cohort: :November}
-        puts "Now we have" + " #{@students.count}#{@students.count > 1 ? " students" : " student"}"
-        # get another name from the user
-        name = gets.chomp
-    end
-    @students # return the array of students
-end
-
 
 def print_header
     puts "The students of Villains Academy"
@@ -97,6 +87,28 @@ def save_students
     file.close
 end
 
+def load_students(filename = "students.csv")
+    file = File.open(filename, "r")
+    file.readlines.each do |line|
+    name, cohort = line.chomp.split(",") #WOW!!! Paraller assignemnt of two variables from the split in one go!
+        @students << {name: name, cohort: cohort.to_sym}
+    end
+    file.close
+end
+
+def try_load_students
+    filename = ARGV.first # first argument from the command line
+    return if filename.nil? # get out of the method if it isn't given
+    if File.exists?(filename)
+        load_students(filename)
+          puts "Loaded #{@students.count} from #{filename}"
+    else # if it doesn't exist
+        puts "Sorry, #{filename} doesn't exists."
+        exit # quit the program
+    end
+end
+
+try_load_students
 interactive_menu
 
 
