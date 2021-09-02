@@ -1,3 +1,5 @@
+require "csv"
+
 @students =[] 
 
 def print_menu
@@ -81,10 +83,23 @@ def print_footer
     puts "Overall, we have #{@students.count} great #{noun}"
 end
 
+
 def save_students
     puts "Enter file name"
     filename = gets.chomp
-    file = File.open(filename, "a") do |file|
+    CSV.open(filename, "a") do |csv|
+        @students.each do |student|
+          csv << student.values
+        end
+      end
+    feedback
+  end
+
+=begin
+def save_students
+    puts "Enter file name"
+    filename = gets.chomp
+    file = open(filename, "a") do |file|
         @students.each do |student|
             student_data = [student[:name], student[:cohort]]
             csv_line = student_data.join(",")
@@ -93,9 +108,10 @@ def save_students
     end
     feedback
 end
+=end
 
 def load_file_check
- if @filename == @filename_check
+ if @filename == @filename_check # why $< does not work?
         puts "You have already loaded this list"
         interactive_menu
     else
@@ -107,16 +123,35 @@ def load_students
     puts "Enter file name"
     @filename = gets.chomp
     load_file_check
-        file = File.open(@filename, "r") do |file|
+    CSV.foreach(@filename, headers: true, header_converters: :symbol) do |row|
+      headers ||= row.headers  
+      @students << row.to_h
+    end
+    @filename_check = @filename
+    feedback
+  end
+  
+  def print_student_list
+    @students.each do |student|
+        puts "#{student[:name]} (#{student[:cohort]} cohort)"
+    end
+  end
+
+=begin
+def load_students
+    puts "Enter file name"
+    @filename = gets.chomp
+    load_file_check
+        file = open(@filename, "r") do |file|
             file.readlines.each do |line|
             @name, cohort = line.chomp.split(",")
                 add_to_list(cohort)
             end
         end
-    
     @filename_check = @filename
     feedback
 end
+=end
 =begin
 def try_load_students
     filename = ARGV.first 
@@ -131,7 +166,10 @@ def try_load_students
 end
 =end
 #try_load_students
+
+puts $0
 interactive_menu
+
 
 
 
